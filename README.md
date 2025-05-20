@@ -215,7 +215,7 @@ Dự án này được phân phối dưới giấy phép MIT. Xem file `LICENSE`
 
 ## 👥 Tác giả
 
-- **Datkoishi** - *Phát triển ban đầu* - [GitHub của bạn](https://github.com/Datkoishi)
+- **Datkoishi** - *Phát triển ban đầu* - [GitHub của Đạt](https://github.com/Datkoishi)
 
 
 ## 🙏 Lời cảm ơn
