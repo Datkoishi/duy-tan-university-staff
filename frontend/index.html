@@ -6,6 +6,9 @@
   <title>Hệ thống Quản lý Giảng viên - Đại học Duy Tân</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="public/css/style.css">
 </head>
 <body>
@@ -149,30 +152,34 @@
         </div>
       </div>
 
-      <div class="table-responsive">
-        <table class="table table-striped table-hover">
-          <thead class="table-primary">
-            <tr>
-              <th>ID</th>
-              <th>Họ và tên</th>
-              <th>Email</th>
-              <th>Số điện thoại</th>
-              <th>Chức vụ</th>
-              <th>Trường/Khoa</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody id="instructors-table-body">
-            <!-- Instructors will be loaded here -->
-            <tr>
-              <td colspan="7" class="text-center">
-                <div class="spinner-border text-primary" role="status">
-                  <span class="visually-hidden">Đang tải...</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead class="table-primary">
+                <tr>
+                  <th>ID</th>
+                  <th>Họ và tên</th>
+                  <th>Email</th>
+                  <th>Số điện thoại</th>
+                  <th>Chức vụ</th>
+                  <th>Trường/Khoa</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="instructors-table-body">
+                <!-- Instructors will be loaded here -->
+                <tr>
+                  <td colspan="7" class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                      <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div class="modal fade" id="instructorModal" tabindex="-1">
@@ -346,13 +353,15 @@
         </button>
       </div>
 
-      <div id="search-results-container">
-        <!-- Search results will be loaded here -->
+      <div class="card">
+        <div class="card-body" id="search-results-container">
+          <!-- Search results will be loaded here -->
+        </div>
       </div>
     </section>
   </div>
 
-  <footer class="bg-dark text-white mt-5 py-4">
+  <footer class="bg-dark text-white py-4">
     <div class="container">
       <div class="row">
         <div class="col-md-6">
