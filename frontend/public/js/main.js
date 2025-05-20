@@ -1,22 +1,27 @@
 // Biến toàn cục
-let currentSection = "home"
+let currentSection = "dashboard" // Thay đổi từ "home" thành "dashboard"
 let departments = []
 let instructors = []
 let currentInstructorId = null
 let currentDepartmentId = null
 let previousSection = null
 
+// URL cơ sở API
+const API_BASE_URL = "/api"
+window.API_BASE_URL = API_BASE_URL
+
 // DOM Elements
 const sections = {
+  dashboard: document.getElementById("dashboard-section"),
   home: document.getElementById("home-section"),
   instructors: document.getElementById("instructors-section"),
   departments: document.getElementById("departments-section"),
   addInstructor: document.getElementById("add-instructor-section"),
   searchResults: document.getElementById("search-results-section"),
+  bulkAdd: document.getElementById("bulk-add-section"),
+  reports: document.getElementById("reports-section"),
+  settings: document.getElementById("settings-section"),
 }
-
-// URL cơ sở API
-const API_BASE_URL = "/api"
 
 // Khởi tạo ứng dụng
 document.addEventListener("DOMContentLoaded", () => {
@@ -30,40 +35,73 @@ document.addEventListener("DOMContentLoaded", () => {
   loadDepartments()
   loadInstructors()
   loadStatistics()
+
+  // Hiển thị dashboard mặc định
+  showSection("dashboard")
 })
 
 // Thiết lập điều hướng
 function setupNavigation() {
-  document.getElementById("home-link").addEventListener("click", (e) => {
+  // Dashboard
+  document.getElementById("dashboard-link").addEventListener("click", (e) => {
     e.preventDefault()
-    showSection("home")
+    showSection("dashboard")
   })
 
+  // Giảng viên
   document.getElementById("instructors-link").addEventListener("click", (e) => {
     e.preventDefault()
     showSection("instructors")
   })
 
+  // Trường/Khoa
   document.getElementById("departments-link").addEventListener("click", (e) => {
     e.preventDefault()
     showSection("departments")
   })
 
+  // Thêm Giảng viên
   document.getElementById("add-instructor-link").addEventListener("click", (e) => {
     e.preventDefault()
     showSection("addInstructor")
     resetInstructorForm()
   })
 
-  document.getElementById("view-instructors-btn").addEventListener("click", () => {
-    showSection("instructors")
+  // Thêm hàng loạt
+  document.getElementById("bulk-add-link").addEventListener("click", (e) => {
+    e.preventDefault()
+    showSection("bulkAdd")
   })
 
-  document.getElementById("add-new-instructor-btn").addEventListener("click", () => {
-    showSection("addInstructor")
-    resetInstructorForm()
+  // Báo cáo
+  document.getElementById("reports-link").addEventListener("click", (e) => {
+    e.preventDefault()
+    showSection("reports")
   })
 
+  // Cài đặt
+  document.getElementById("settings-link").addEventListener("click", (e) => {
+    e.preventDefault()
+    showSection("settings")
+  })
+
+  // Nút xem tất cả giảng viên
+  const viewAllInstructorsBtn = document.getElementById("view-all-instructors-btn")
+  if (viewAllInstructorsBtn) {
+    viewAllInstructorsBtn.addEventListener("click", () => {
+      showSection("instructors")
+    })
+  }
+
+  // Nút xem tất cả Trường/Khoa
+  const viewAllDepartmentsBtn = document.getElementById("view-all-departments-btn")
+  if (viewAllDepartmentsBtn) {
+    viewAllDepartmentsBtn.addEventListener("click", () => {
+      showSection("departments")
+    })
+  }
+
+  // Nút quay lại từ kết quả tìm kiếm
   document.getElementById("back-from-search-btn").addEventListener("click", () => {
     showSection(currentSection === "searchResults" ? previousSection : currentSection)
   })
@@ -97,7 +135,7 @@ function setupEventListeners() {
     document.getElementById("department-name").value = ""
     document.getElementById("department-description").value = ""
 
-    const departmentModal = new bootstrap.Modal(document.getElementById("departmentModal"))
+    const departmentModal = new window.bootstrap.Modal(document.getElementById("departmentModal"))
     departmentModal.show()
   })
 
@@ -133,6 +171,53 @@ function setupEventListeners() {
       }
     })
   }
+
+  // Nút thêm giảng viên từ trang giảng viên
+  const addInstructorBtn2 = document.getElementById("add-instructor-btn-2")
+  if (addInstructorBtn2) {
+    addInstructorBtn2.addEventListener("click", () => {
+      showSection("addInstructor")
+      resetInstructorForm()
+    })
+  }
+
+  // Nút làm mới dashboard
+  const refreshDashboardBtn = document.getElementById("refresh-dashboard-btn")
+  if (refreshDashboardBtn) {
+    refreshDashboardBtn.addEventListener("click", () => {
+      loadStatistics()
+    })
+  }
+
+  // Nút lưu cài đặt
+  const saveSettingsBtn = document.getElementById("save-settings-btn")
+  if (saveSettingsBtn) {
+    saveSettingsBtn.addEventListener("click", () => {
+      showAlert("Cài đặt đã được lưu thành công", "success")
+    })
+  }
+
+  // Nút chuyển đổi sidebar
+  const sidebarToggle = document.getElementById("sidebar-toggle")
+  const sidebar = document.getElementById("sidebar")
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("show")
+    })
+  }
+
+  // Nút chuyển đổi dark mode
+  const darkModeToggle = document.getElementById("dark-mode-toggle")
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode")
+      const icon = darkModeToggle.querySelector("i")
+      if (icon) {
+        icon.classList.toggle("bi-moon-fill")
+        icon.classList.toggle("bi-sun-fill")
+      }
+    })
+  }
 }
 
 // Hiển thị phần được chọn và ẩn các phần khác
@@ -147,11 +232,15 @@ function showSection(sectionName) {
 
   // Ẩn tất cả các phần
   Object.values(sections).forEach((section) => {
-    section.style.display = "none"
+    if (section) {
+      section.style.display = "none"
+    }
   })
 
   // Hiển thị phần được chọn
-  sections[sectionName].style.display = "block"
+  if (sections[sectionName]) {
+    sections[sectionName].style.display = "block"
+  }
 
   // Cập nhật liên kết điều hướng hoạt động
   document.querySelectorAll(".nav-link").forEach((link) => {
@@ -168,10 +257,19 @@ function showSection(sectionName) {
     loadDepartments()
   } else if (sectionName === "instructors") {
     loadInstructors()
-  } else if (sectionName === "home") {
+  } else if (sectionName === "dashboard") {
     loadStatistics()
   } else if (sectionName === "addInstructor") {
     populateDepartmentDropdown("instructor-department")
+  } else if (sectionName === "bulkAdd") {
+    populateDepartmentDropdown("random-department")
+  } else if (sectionName === "reports") {
+    // Cập nhật biểu đồ báo cáo
+    if (window.ChartUtils) {
+      window.ChartUtils.updateDepartmentsChart(departments, instructors)
+      window.ChartUtils.updateEducationChart(instructors)
+      window.ChartUtils.updateStatisticsTable(departments, instructors)
+    }
   }
 }
 
@@ -184,91 +282,96 @@ async function loadDepartments() {
     }
 
     departments = await response.json()
+    window.departments = departments // Xuất ra window để các file khác có thể truy cập
 
     // Cập nhật danh sách Trường/Khoa trên trang chủ
     const departmentsListHome = document.getElementById("departments-list-home")
-    departmentsListHome.innerHTML = ""
+    if (departmentsListHome) {
+      departmentsListHome.innerHTML = ""
 
-    if (departments.length === 0) {
-      departmentsListHome.innerHTML = '<li class="list-group-item">Không có dữ liệu</li>'
-    } else {
-      departments.forEach((department) => {
-        const li = document.createElement("li")
-        li.className = "list-group-item d-flex justify-content-between align-items-center"
-        li.innerHTML = `
-          <span>${department.name}</span>
-          <span class="badge bg-primary rounded-pill department-count" data-department-id="${department.id}">0</span>
-        `
-        li.addEventListener("click", () => {
-          showSection("instructors")
-          document.getElementById("department-filter").value = department.id
-          loadInstructorsByDepartment(department.id)
+      if (departments.length === 0) {
+        departmentsListHome.innerHTML = '<li class="list-group-item">Không có dữ liệu</li>'
+      } else {
+        departments.forEach((department) => {
+          const li = document.createElement("li")
+          li.className = "list-group-item d-flex justify-content-between align-items-center"
+          li.innerHTML = `
+            <span>${department.name}</span>
+            <span class="badge bg-primary rounded-pill department-count" data-department-id="${department.id}">0</span>
+          `
+          li.addEventListener("click", () => {
+            showSection("instructors")
+            document.getElementById("department-filter").value = department.id
+            loadInstructorsByDepartment(department.id)
+          })
+          departmentsListHome.appendChild(li)
         })
-        departmentsListHome.appendChild(li)
-      })
+      }
     }
 
     // Cập nhật container Trường/Khoa trên trang Trường/Khoa
     const departmentsContainer = document.getElementById("departments-container")
-    departmentsContainer.innerHTML = ""
+    if (departmentsContainer) {
+      departmentsContainer.innerHTML = ""
 
-    if (departments.length === 0) {
-      departmentsContainer.innerHTML = '<div class="col-12 text-center">Không có dữ liệu</div>'
-    } else {
-      departments.forEach((department) => {
-        const col = document.createElement("div")
-        col.className = "col-md-4 mb-4"
-        col.innerHTML = `
-          <div class="card department-card h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <h5 class="mb-0">${department.name}</h5>
-              <div>
-                <button class="btn btn-sm btn-light edit-department-btn" data-department-id="${department.id}">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-danger delete-department-btn" data-department-id="${department.id}">
-                  <i class="bi bi-trash"></i>
+      if (departments.length === 0) {
+        departmentsContainer.innerHTML = '<div class="col-12 text-center">Không có dữ liệu</div>'
+      } else {
+        departments.forEach((department) => {
+          const col = document.createElement("div")
+          col.className = "col-md-4 mb-4"
+          col.innerHTML = `
+            <div class="card department-card h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">${department.name}</h5>
+                <div>
+                  <button class="btn btn-sm btn-light edit-department-btn" data-department-id="${department.id}">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger delete-department-btn" data-department-id="${department.id}">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <p class="card-text">${department.description || "Không có mô tả"}</p>
+              </div>
+              <div class="card-footer bg-white">
+                <button class="btn btn-primary btn-sm view-department-instructors-btn" data-department-id="${department.id}">
+                  <i class="bi bi-people-fill me-2"></i>Xem giảng viên
                 </button>
               </div>
             </div>
-            <div class="card-body">
-              <p class="card-text">${department.description || "Không có mô tả"}</p>
-            </div>
-            <div class="card-footer bg-white">
-              <button class="btn btn-primary btn-sm view-department-instructors-btn" data-department-id="${department.id}">
-                <i class="bi bi-people-fill me-2"></i>Xem giảng viên
-              </button>
-            </div>
-          </div>
-        `
-        departmentsContainer.appendChild(col)
-      })
-
-      // Thêm sự kiện lắng nghe cho các nút Trường/Khoa
-      document.querySelectorAll(".edit-department-btn").forEach((button) => {
-        button.addEventListener("click", (e) => {
-          e.stopPropagation()
-          const departmentId = button.getAttribute("data-department-id")
-          editDepartment(departmentId)
+          `
+          departmentsContainer.appendChild(col)
         })
-      })
 
-      document.querySelectorAll(".delete-department-btn").forEach((button) => {
-        button.addEventListener("click", (e) => {
-          e.stopPropagation()
-          const departmentId = button.getAttribute("data-department-id")
-          confirmDeleteDepartment(departmentId)
+        // Thêm sự kiện lắng nghe cho các nút Trường/Khoa
+        document.querySelectorAll(".edit-department-btn").forEach((button) => {
+          button.addEventListener("click", (e) => {
+            e.stopPropagation()
+            const departmentId = button.getAttribute("data-department-id")
+            editDepartment(departmentId)
+          })
         })
-      })
 
-      document.querySelectorAll(".view-department-instructors-btn").forEach((button) => {
-        button.addEventListener("click", () => {
-          const departmentId = button.getAttribute("data-department-id")
-          showSection("instructors")
-          document.getElementById("department-filter").value = departmentId
-          loadInstructorsByDepartment(departmentId)
+        document.querySelectorAll(".delete-department-btn").forEach((button) => {
+          button.addEventListener("click", (e) => {
+            e.stopPropagation()
+            const departmentId = button.getAttribute("data-department-id")
+            confirmDeleteDepartment(departmentId)
+          })
         })
-      })
+
+        document.querySelectorAll(".view-department-instructors-btn").forEach((button) => {
+          button.addEventListener("click", () => {
+            const departmentId = button.getAttribute("data-department-id")
+            showSection("instructors")
+            document.getElementById("department-filter").value = departmentId
+            loadInstructorsByDepartment(departmentId)
+          })
+        })
+      }
     }
 
     // Cập nhật dropdown bộ lọc Trường/Khoa
@@ -291,6 +394,7 @@ async function loadInstructors() {
     }
 
     instructors = await response.json()
+    window.instructors = instructors // Xuất ra window để các file khác có thể truy cập
 
     // Cập nhật bảng giảng viên
     updateInstructorsTable(instructors)
@@ -300,11 +404,16 @@ async function loadInstructors() {
 
     // Cập nhật số lượng Trường/Khoa
     updateDepartmentCounts()
+
+    // Cập nhật thống kê
+    loadStatistics()
   } catch (error) {
     console.error("Lỗi khi tải giảng viên:", error)
     showAlert("Lỗi khi tải dữ liệu Giảng viên", "danger")
   }
 }
+// Xuất hàm loadInstructors ra window để các file khác có thể truy cập
+window.loadInstructors = loadInstructors
 
 // Tải giảng viên theo Trường/Khoa
 async function loadInstructorsByDepartment(departmentId) {
@@ -327,6 +436,8 @@ async function loadInstructorsByDepartment(departmentId) {
 // Cập nhật bảng giảng viên
 function updateInstructorsTable(instructorsList) {
   const tableBody = document.getElementById("instructors-table-body")
+  if (!tableBody) return
+
   tableBody.innerHTML = ""
 
   if (instructorsList.length === 0) {
@@ -383,6 +494,8 @@ function updateInstructorsTable(instructorsList) {
 // Cập nhật danh sách giảng viên gần đây
 function updateRecentInstructorsList() {
   const recentInstructorsList = document.getElementById("recent-instructors-list")
+  if (!recentInstructorsList) return
+
   recentInstructorsList.innerHTML = ""
 
   if (instructors.length === 0) {
@@ -390,7 +503,7 @@ function updateRecentInstructorsList() {
   } else {
     // Sắp xếp giảng viên theo created_at (mới nhất trước) và lấy 5 người đầu tiên
     const recentInstructors = [...instructors]
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
       .slice(0, 5)
 
     recentInstructors.forEach((instructor) => {
@@ -440,24 +553,57 @@ function updateDepartmentCounts() {
 // Tải thống kê cho trang chủ
 function loadStatistics() {
   // Tổng số giảng viên
-  document.getElementById("total-instructors").textContent = instructors.length
-  document.getElementById("total-instructors-dashboard").textContent = instructors.length
+  const totalInstructorsElements = document.querySelectorAll("#total-instructors, #total-instructors-dashboard")
+  totalInstructorsElements.forEach((element) => {
+    if (element) {
+      element.textContent = instructors.length
+    }
+  })
 
   // Tổng số Trường/Khoa
-  document.getElementById("total-departments").textContent = departments.length
-  document.getElementById("total-departments-dashboard").textContent = departments.length
+  const totalDepartmentsElements = document.querySelectorAll("#total-departments, #total-departments-dashboard")
+  totalDepartmentsElements.forEach((element) => {
+    if (element) {
+      element.textContent = departments.length
+    }
+  })
 
   // Thêm mới gần đây (trong 30 ngày qua)
   const thirtyDaysAgo = new Date()
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
   const recentAdditions = instructors.filter((instructor) => {
-    const createdAt = new Date(instructor.created_at)
+    const createdAt = new Date(instructor.created_at || 0)
     return createdAt >= thirtyDaysAgo
   }).length
 
-  document.getElementById("recent-additions").textContent = recentAdditions
-  document.getElementById("recent-additions-dashboard").textContent = recentAdditions
+  const recentAdditionsElements = document.querySelectorAll("#recent-additions, #recent-additions-dashboard")
+  recentAdditionsElements.forEach((element) => {
+    if (element) {
+      element.textContent = recentAdditions
+    }
+  })
+
+  // Tính phần trăm tăng trưởng
+  const instructorGrowthElement = document.getElementById("instructor-growth")
+  if (instructorGrowthElement) {
+    const sixtyDaysAgo = new Date()
+    sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60)
+
+    const previousMonthAdditions = instructors.filter((instructor) => {
+      const createdAt = new Date(instructor.created_at || 0)
+      return createdAt >= sixtyDaysAgo && createdAt < thirtyDaysAgo
+    }).length
+
+    let growthPercentage = 0
+    if (previousMonthAdditions > 0) {
+      growthPercentage = Math.round(((recentAdditions - previousMonthAdditions) / previousMonthAdditions) * 100)
+    } else if (recentAdditions > 0) {
+      growthPercentage = 100
+    }
+
+    instructorGrowthElement.textContent = `${growthPercentage}%`
+  }
 
   // Cập nhật biểu đồ nếu ChartUtils tồn tại
   if (window.ChartUtils) {
@@ -469,6 +615,8 @@ function loadStatistics() {
   // Cập nhật bảng giảng viên gần đây trên dashboard
   updateRecentInstructorsTable()
 }
+// Xuất hàm loadStatistics ra window để các file khác có thể truy cập
+window.loadStatistics = loadStatistics
 
 // Thêm hàm mới để cập nhật bảng giảng viên gần đây trên dashboard
 function updateRecentInstructorsTable() {
@@ -521,6 +669,7 @@ function updateRecentInstructorsTable() {
 // Điền dropdown Trường/Khoa
 function populateDepartmentDropdown(dropdownId) {
   const dropdown = document.getElementById(dropdownId)
+  if (!dropdown) return
 
   // Giữ tùy chọn đầu tiên và xóa phần còn lại
   const firstOption = dropdown.options[0]
@@ -603,13 +752,13 @@ async function viewInstructor(instructorId) {
 
     // Thiết lập nút chỉnh sửa
     document.getElementById("edit-instructor-btn").addEventListener("click", () => {
-      const instructorModal = bootstrap.Modal.getInstance(document.getElementById("instructorModal"))
+      const instructorModal = window.bootstrap.Modal.getInstance(document.getElementById("instructorModal"))
       instructorModal.hide()
       editInstructor(instructor.id)
     })
 
     // Hiển thị modal
-    const instructorModal = new bootstrap.Modal(document.getElementById("instructorModal"))
+    const instructorModal = new window.bootstrap.Modal(document.getElementById("instructorModal"))
     instructorModal.show()
   } catch (error) {
     console.error("Lỗi khi tải chi tiết giảng viên:", error)
@@ -736,7 +885,7 @@ function editDepartment(departmentId) {
   document.getElementById("department-name").value = department.name
   document.getElementById("department-description").value = department.description || ""
 
-  const departmentModal = new bootstrap.Modal(document.getElementById("departmentModal"))
+  const departmentModal = new window.bootstrap.Modal(document.getElementById("departmentModal"))
   departmentModal.show()
 }
 
@@ -744,7 +893,7 @@ function editDepartment(departmentId) {
 function confirmDeleteDepartment(departmentId) {
   currentDepartmentId = departmentId
 
-  const confirmModal = new bootstrap.Modal(document.getElementById("confirmDeleteDepartmentModal"))
+  const confirmModal = new window.bootstrap.Modal(document.getElementById("confirmDeleteDepartmentModal"))
   confirmModal.show()
 }
 
@@ -760,7 +909,7 @@ async function deleteDepartment(departmentId) {
     }
 
     // Đóng modal
-    const confirmModal = bootstrap.Modal.getInstance(document.getElementById("confirmDeleteDepartmentModal"))
+    const confirmModal = window.bootstrap.Modal.getInstance(document.getElementById("confirmDeleteDepartmentModal"))
     confirmModal.hide()
 
     // Tải lại Trường/Khoa và giảng viên
@@ -774,7 +923,7 @@ async function deleteDepartment(departmentId) {
   }
 }
 
-// Lưu Trường/Khoa (tạo hoặc cập nhật)
+// Lưu Trường/Khoa (tạo ho��c cập nhật)
 async function saveDepartment() {
   try {
     const departmentId = document.getElementById("department-id").value
@@ -802,7 +951,7 @@ async function saveDepartment() {
     }
 
     // Đóng modal
-    const departmentModal = bootstrap.Modal.getInstance(document.getElementById("departmentModal"))
+    const departmentModal = window.bootstrap.Modal.getInstance(document.getElementById("departmentModal"))
     departmentModal.hide()
 
     // Tải lại Trường/Khoa
@@ -929,13 +1078,12 @@ function showAlert(message, type) {
 
   // Tự động đóng sau 3 giây
   setTimeout(() => {
-    const bsAlert = new bootstrap.Alert(alertElement)
+    const bsAlert = new window.bootstrap.Alert(alertElement)
     bsAlert.close()
   }, 3000)
 }
-
-// Khởi tạo bootstrap
-const bootstrap = window.bootstrap
+// Xuất hàm showAlert ra window để các file khác có thể truy cập
+window.showAlert = showAlert
 
 // Thêm hàm mới để cập nhật danh sách Trường/Khoa trên dashboard
 function updateDepartmentsListDashboard() {

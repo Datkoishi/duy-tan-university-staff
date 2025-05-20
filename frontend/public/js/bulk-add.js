@@ -1,9 +1,5 @@
 // Biến toàn cục cho danh sách giảng viên hàng loạt
 let bulkInstructors = []
-const departments = [] // Declare departments variable
-const API_BASE_URL = "https://api.example.com" // Declare API_BASE_URL variable
-const loadInstructors = async () => {} // Declare loadInstructors variable
-const showAlert = (message, type) => {} // Declare showAlert variable
 
 // Khởi tạo khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
@@ -46,8 +42,8 @@ function populateRandomDepartmentDropdown() {
   }
 
   // Thêm các Trường/Khoa vào dropdown
-  if (departments && departments.length > 0) {
-    departments.forEach((department) => {
+  if (window.departments && window.departments.length > 0) {
+    window.departments.forEach((department) => {
       const option = document.createElement("option")
       option.value = department.id
       option.textContent = department.name
@@ -64,8 +60,8 @@ function generateRandomInstructors() {
   const educationLevel = document.getElementById("random-education").value
 
   // Kiểm tra nếu không có Trường/Khoa
-  if (departments.length === 0) {
-    showAlert("Không có Trường/Khoa nào. Vui lòng thêm Trường/Khoa trước.", "warning")
+  if (!window.departments || window.departments.length === 0) {
+    window.showAlert("Không có Trường/Khoa nào. Vui lòng thêm Trường/Khoa trước.", "warning")
     return
   }
 
@@ -77,8 +73,8 @@ function generateRandomInstructors() {
     // Chọn Trường/Khoa ngẫu nhiên nếu chọn "Tất cả các khoa"
     let selectedDepartmentId = departmentId
     if (departmentId === "all") {
-      const randomIndex = Math.floor(Math.random() * departments.length)
-      selectedDepartmentId = departments[randomIndex].id
+      const randomIndex = Math.floor(Math.random() * window.departments.length)
+      selectedDepartmentId = window.departments[randomIndex].id
     }
 
     // Chọn trình độ học vấn ngẫu nhiên nếu chọn "Ngẫu nhiên"
@@ -110,7 +106,7 @@ function generateRandomInstructors() {
       education_level: selectedEducation,
       join_date: joinDate,
       bio: bio,
-      department_name: departments.find((d) => d.id == selectedDepartmentId)?.name || "Unknown",
+      department_name: window.departments.find((d) => d.id == selectedDepartmentId)?.name || "Unknown",
     })
   }
 
@@ -184,13 +180,13 @@ function clearBulkList() {
 // Lưu tất cả giảng viên
 async function saveBulkInstructors() {
   if (bulkInstructors.length === 0) {
-    showAlert("Không có giảng viên nào để lưu", "warning")
+    window.showAlert("Không có giảng viên nào để lưu", "warning")
     return
   }
 
   try {
     // Hiển thị thông báo đang xử lý
-    showAlert("Đang lưu dữ liệu...", "info")
+    window.showAlert("Đang lưu dữ liệu...", "info")
 
     // Lưu từng giảng viên
     let successCount = 0
@@ -212,7 +208,7 @@ async function saveBulkInstructors() {
 
       try {
         // Gửi yêu cầu API
-        const response = await fetch(`${API_BASE_URL}/instructors`, {
+        const response = await fetch(`${window.API_BASE_URL}/instructors`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -234,17 +230,19 @@ async function saveBulkInstructors() {
 
     // Hiển thị kết quả
     if (errorCount === 0) {
-      showAlert(`Đã lưu thành công ${successCount} giảng viên`, "success")
+      window.showAlert(`Đã lưu thành công ${successCount} giảng viên`, "success")
       // Xóa danh sách sau khi lưu thành công
       bulkInstructors = []
       updateBulkInstructorsTable()
       // Tải lại danh sách giảng viên
-      await loadInstructors()
+      if (window.loadInstructors) {
+        await window.loadInstructors()
+      }
     } else {
-      showAlert(`Đã lưu ${successCount} giảng viên, ${errorCount} giảng viên bị lỗi`, "warning")
+      window.showAlert(`Đã lưu ${successCount} giảng viên, ${errorCount} giảng viên bị lỗi`, "warning")
     }
   } catch (error) {
     console.error("Lỗi khi lưu giảng viên hàng loạt:", error)
-    showAlert("Lỗi khi lưu giảng viên hàng loạt", "danger")
+    window.showAlert("Lỗi khi lưu giảng viên hàng loạt", "danger")
   }
 }

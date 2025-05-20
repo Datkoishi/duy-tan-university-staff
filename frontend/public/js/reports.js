@@ -9,32 +9,32 @@ function setupReportEventListeners() {
   // Nút xuất báo cáo Excel
   const exportReportExcelBtn = document.getElementById("export-report-excel")
   if (exportReportExcelBtn) {
-    exportReportExcelBtn.addEventListener("click", () => exportReport("excel"))
+    exportReportExcelBtn.addEventListener("click", () => {
+      exportReport("excel")
+    })
   }
 
   // Nút xuất báo cáo PDF
   const exportReportPdfBtn = document.getElementById("export-report-pdf")
   if (exportReportPdfBtn) {
-    exportReportPdfBtn.addEventListener("click", () => exportReport("pdf"))
+    exportReportPdfBtn.addEventListener("click", () => {
+      exportReport("pdf")
+    })
   }
 
   // Nút xuất báo cáo CSV
   const exportReportCsvBtn = document.getElementById("export-report-csv")
   if (exportReportCsvBtn) {
-    exportReportCsvBtn.addEventListener("click", () => exportReport("csv"))
+    exportReportCsvBtn.addEventListener("click", () => {
+      exportReport("csv")
+    })
   }
 }
 
 // Xuất báo cáo
 function exportReport(format) {
-  const departments = [] // Declare departments variable
-  const instructors = [] // Declare instructors variable
-  const showAlert = (message, type) => {
-    console.log(`Alert (${type}): ${message}`)
-  } // Declare showAlert function
-
-  if (!departments || !instructors) {
-    showAlert("Không có dữ liệu để xuất báo cáo", "warning")
+  if (!window.departments || !window.instructors) {
+    window.showAlert("Không có dữ liệu để xuất báo cáo", "warning")
     return
   }
 
@@ -43,7 +43,7 @@ function exportReport(format) {
     const statistics = {}
 
     // Khởi tạo thống kê cho mỗi Trường/Khoa
-    departments.forEach((department) => {
+    window.departments.forEach((department) => {
       statistics[department.id] = {
         name: department.name,
         total: 0,
@@ -56,7 +56,7 @@ function exportReport(format) {
     })
 
     // Đếm số lượng giảng viên theo Trường/Khoa và trình độ học vấn
-    instructors.forEach((instructor) => {
+    window.instructors.forEach((instructor) => {
       const departmentId = instructor.department_id
       const education = instructor.education_level
 
@@ -102,53 +102,60 @@ function exportReport(format) {
     }
   } catch (error) {
     console.error("Lỗi khi xuất báo cáo:", error)
-    showAlert("Lỗi khi xuất báo cáo", "danger")
+    window.showAlert("Lỗi khi xuất báo cáo", "danger")
   }
 }
 
 // Xuất báo cáo sang Excel
 function exportToExcel(data) {
-  const XLSX = {} // Declare XLSX variable
-  XLSX.utils = {
-    book_new: () => {},
-    json_to_sheet: (data) => {},
-    book_append_sheet: (wb, ws, name) => {},
-    writeFile: (wb, filename) => {},
-  } // Mock XLSX utils for illustration
+  if (!window.XLSX) {
+    alert("Thư viện XLSX chưa được tải. Vui lòng thử lại sau.")
+    return
+  }
 
   // Tạo workbook mới
-  const wb = XLSX.utils.book_new()
+  const wb = window.XLSX.utils.book_new()
 
   // Tạo worksheet từ dữ liệu
-  const ws = XLSX.utils.json_to_sheet(data)
+  const ws = window.XLSX.utils.json_to_sheet(data)
 
   // Thêm worksheet vào workbook
-  XLSX.utils.book_append_sheet(wb, ws, "Thống kê Giảng viên")
+  window.XLSX.utils.book_append_sheet(wb, ws, "Thống kê Giảng viên")
 
   // Xuất file Excel
-  XLSX.writeFile(wb, "Thong_ke_Giang_vien.xlsx")
+  window.XLSX.writeFile(wb, "Thong_ke_Giang_vien.xlsx")
 }
 
 // Xuất báo cáo sang CSV
 function exportToCSV(data) {
-  const XLSX = {} // Declare XLSX variable
-  XLSX.utils = {
-    json_to_sheet: (data) => {},
-    sheet_to_csv: (ws) => {},
-  } // Mock XLSX utils for illustration
-  const saveAs = (blob, filename) => {
-    console.log(`Saving file ${filename}`)
-  } // Declare saveAs function
+  if (!window.XLSX) {
+    alert("Thư viện XLSX chưa được tải. Vui lòng thử lại sau.")
+    return
+  }
 
   // Tạo worksheet từ dữ liệu
-  const ws = XLSX.utils.json_to_sheet(data)
+  const ws = window.XLSX.utils.json_to_sheet(data)
 
   // Chuyển đổi worksheet sang chuỗi CSV
-  const csv = XLSX.utils.sheet_to_csv(ws)
+  const csv = window.XLSX.utils.sheet_to_csv(ws)
 
   // Tạo blob từ chuỗi CSV
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" })
 
   // Xuất file CSV
-  saveAs(blob, "Thong_ke_Giang_vien.csv")
+  if (window.saveAs) {
+    window.saveAs(blob, "Thong_ke_Giang_vien.csv")
+  } else {
+    // Fallback nếu không có thư viện FileSaver
+    const a = document.createElement("a")
+    const url = URL.createObjectURL(blob)
+    a.href = url
+    a.download = "Thong_ke_Giang_vien.csv"
+    document.body.appendChild(a)
+    a.click()
+    setTimeout(() => {
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    }, 0)
+  }
 }
