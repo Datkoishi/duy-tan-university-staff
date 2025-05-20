@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hệ thống Quản lý Giảng viên - Đại học Duy Tân</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="public/css/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="bi bi-mortarboard-fill me-2"></i>
+        Đại học Duy Tân
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link active" href="#" id="home-link">Trang chủ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="instructors-link">Giảng viên</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="departments-link">Trường/Khoa</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="add-instructor-link">Thêm Giảng viên</a>
+          </li>
+        </ul>
+        <form class="d-flex" id="search-form">
+          <input class="form-control me-2" type="search" placeholder="Tìm kiếm giảng viên..." id="search-input">
+          <button class="btn btn-light" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <!-- Home Section -->
+    <section id="home-section">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h2 class="card-title">Hệ thống Quản lý Thông tin Giảng viên</h2>
+              <p class="card-text">
+                Chào mừng đến với Hệ thống Quản lý Thông tin Giảng viên của Đại học Duy Tân. 
+                Hệ thống này giúp thu thập và quản lý thông tin của giảng viên từ các trường và khoa khác nhau.
+              </p>
+              <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                <button class="btn btn-primary me-md-2" id="view-instructors-btn">
+                  <i class="bi bi-people-fill me-2"></i>Xem danh sách giảng viên
+                </button>
+                <button class="btn btn-success" id="add-new-instructor-btn">
+                  <i class="bi bi-person-plus-fill me-2"></i>Thêm giảng viên mới
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Thống kê nhanh</h5>
+            </div>
+            <div class="card-body">
+              <div class="row" id="stats-container">
+                <div class="col-md-4 mb-3">
+                  <div class="card text-center h-100 border-primary">
+                    <div class="card-body">
+                      <h3 class="card-title text-primary" id="total-instructors">0</h3>
+                      <p class="card-text">Tổng số giảng viên</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="card text-center h-100 border-success">
+                    <div class="card-body">
+                      <h3 class="card-title text-success" id="total-departments">0</h3>
+                      <p class="card-text">Trường/Khoa</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <div class="card text-center h-100 border-info">
+                    <div class="card-body">
+                      <h3 class="card-title text-info" id="recent-additions">0</h3>
+                      <p class="card-text">Thêm mới gần đây</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Trường/Khoa</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group" id="departments-list-home">
+                <!-- Departments will be loaded here -->
+                <li class="list-group-item text-center">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Đang tải...</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0">Giảng viên mới nhất</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group" id="recent-instructors-list">
+                <!-- Recent instructors will be loaded here -->
+                <li class="list-group-item text-center">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Đang tải...</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Instructors Section -->
+    <section id="instructors-section" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Danh sách Giảng viên</h2>
+        <div>
+          <select class="form-select" id="department-filter">
+            <option value="">Tất cả Trường/Khoa</option>
+            <!-- Departments will be loaded here -->
+          </select>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead class="table-primary">
+            <tr>
+              <th>ID</th>
+              <th>Họ và tên</th>
+              <th>Email</th>
+              <th>Số điện thoại</th>
+              <th>Chức vụ</th>
+              <th>Trường/Khoa</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="instructors-table-body">
+            <!-- Instructors will be loaded here -->
+            <tr>
+              <td colspan="7" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Đang tải...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal fade" id="instructorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title">Chi tiết Giảng viên</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="instructor-details">
+              <!-- Instructor details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+              <button type="button" class="btn btn-primary" id="edit-instructor-btn">Chỉnh sửa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Departments Section -->
+    <section id="departments-section" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản lý Trường/Khoa</h2>
+        <button class="btn btn-primary" id="add-department-btn">
+          <i class="bi bi-plus-circle me-2"></i>Thêm Trường/Khoa
+        </button>
+      </div>
+
+      <div class="row" id="departments-container">
+        <!-- Departments will be loaded here -->
+        <div class="col-12 text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Đang tải...</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="departmentModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title" id="department-modal-title">Thêm Trường/Khoa</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <form id="department-form">
+                <input type="hidden" id="department-id">
+                <div class="mb-3">
+                  <label for="department-name" class="form-label">Tên Trường/Khoa</label>
+                  <input type="text" class="form-control" id="department-name" required>
+                </div>
+                <div class="mb-3">
+                  <label for="department-description" class="form-label">Mô tả</label>
+                  <textarea class="form-control" id="department-description" rows="3"></textarea>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+              <button type="button" class="btn btn-primary" id="save-department-btn">Lưu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="confirmDeleteDepartmentModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+              <h5 class="modal-title">Xác nhận xóa</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p>Bạn có chắc chắn muốn xóa Trường/Khoa này? Hành động này không thể hoàn tác.</p>
+              <p><strong>Lưu ý:</strong> Việc xóa Trường/Khoa sẽ xóa tất cả giảng viên thuộc Trường/Khoa này.</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+              <button type="button" class="btn btn-danger" id="confirm-delete-department-btn">Xóa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add/Edit Instructor Section -->
+    <section id="add-instructor-section" style="display: none;">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0" id="instructor-form-title">Thêm Giảng viên mới</h3>
+        </div>
+        <div class="card-body">
+          <form id="instructor-form">
+            <input type="hidden" id="instructor-id">
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="instructor-name" class="form-label">Họ và tên</label>
+                <input type="text" class="form-control" id="instructor-name" required>
+              </div>
+              <div class="col-md-6">
+                <label for="instructor-department" class="form-label">Trường/Khoa</label>
+                <select class="form-select" id="instructor-department" required>
+                  <option value="">Chọn Trường/Khoa</option>
+                  <!-- Departments will be loaded here -->
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="instructor-email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="instructor-email">
+              </div>
+              <div class="col-md-6">
+                <label for="instructor-phone" class="form-label">Số điện thoại</label>
+                <input type="tel" class="form-control" id="instructor-phone">
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="instructor-position" class="form-label">Chức vụ</label>
+                <input type="text" class="form-control" id="instructor-position">
+              </div>
+              <div class="col-md-6">
+                <label for="instructor-education" class="form-label">Trình độ học vấn</label>
+                <select class="form-select" id="instructor-education">
+                  <option value="">Chọn trình độ</option>
+                  <option value="Cử nhân">Cử nhân</option>
+                  <option value="Thạc sĩ">Thạc sĩ</option>
+                  <option value="Tiến sĩ">Tiến sĩ</option>
+                  <option value="Phó Giáo sư">Phó Giáo sư</option>
+                  <option value="Giáo sư">Giáo sư</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="instructor-specialization" class="form-label">Chuyên ngành</label>
+              <input type="text" class="form-control" id="instructor-specialization">
+            </div>
+
+            <div class="mb-3">
+              <label for="instructor-join-date" class="form-label">Ngày bắt đầu công tác</label>
+              <input type="date" class="form-control" id="instructor-join-date">
+            </div>
+
+            <div class="mb-3">
+              <label for="instructor-bio" class="form-label">Tiểu sử</label>
+              <textarea class="form-control" id="instructor-bio" rows="4"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary" id="cancel-instructor-btn">Hủy</button>
+              <button type="submit" class="btn btn-primary" id="save-instructor-btn">Lưu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search Results Section -->
+    <section id="search-results-section" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Kết quả tìm kiếm: <span id="search-query"></span></h2>
+        <button class="btn btn-secondary" id="back-from-search-btn">
+          <i class="bi bi-arrow-left me-2"></i>Quay lại
+        </button>
+      </div>
+
+      <div id="search-results-container">
+        <!-- Search results will be loaded here -->
+      </div>
+    </section>
+  </div>
+
+  <footer class="bg-dark text-white mt-5 py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Đại học Duy Tân</h5>
+          <p>Hệ thống Quản lý Thông tin Giảng viên</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <p>&copy; 2023 Đại học Duy Tân. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="public/js/main.js"></script>
+</body>
+</html>
