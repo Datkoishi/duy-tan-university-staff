@@ -63,8 +63,8 @@ function setupCharts() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 2, // Tỷ lệ chiều rộng:chiều cao = 2:1
+        maintainAspectRatio: false, // Thay đổi thành false để biểu đồ điều chỉnh theo container
+        // aspectRatio: 2, // Bỏ tỷ lệ khía cạnh vì chúng ta đã đặt chiều cao cố định
         plugins: {
           legend: {
             position: "top",
@@ -191,8 +191,8 @@ function setupCharts() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 2.5, // Tỷ lệ chiều rộng:chiều cao = 2.5:1
+        maintainAspectRatio: false, // Thay đổi thành false để biểu đồ điều chỉnh theo container
+        // aspectRatio: 2.5, // Bỏ tỷ lệ khía cạnh vì chúng ta đã đặt chiều cao cố định
         plugins: {
           legend: {
             position: "top",
