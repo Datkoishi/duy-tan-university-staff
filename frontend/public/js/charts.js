@@ -1,32 +1,51 @@
-import { ChartStyle } from "@/components/ui/chart"
-import { ChartLegendContent } from "@/components/ui/chart"
-import { ChartLegend } from "@/components/ui/chart"
-import { ChartTooltipContent } from "@/components/ui/chart"
-import { ChartTooltip } from "@/components/ui/chart"
-import { ChartContainer } from "@/components/ui/chart"
-import { Chart } from "@/components/ui/chart"
-// Xóa dòng import đầu tiên
-// import {
-Chart, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartStyle
-\
-} from "@/components/ui/chart"
-
 // Biến toàn cục cho biểu đồ
-let departmentsChart = null
-let educationChart = null
-let departmentsReportChart = null
-let educationReportChart = null
+let departmentsChart = null;
+let educationChart = null;
+let departmentsReportChart = null;
+let educationReportChart = null;
 
 // Khởi tạo biểu đồ
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function() {
   // Thiết lập các biểu đồ khi trang được tải
-  setupCharts()
-})
+  setupCharts();
+  
+  // Thiết lập sự kiện cho nút làm mới dashboard
+  const refreshDashboardBtn = document.getElementById("refresh-dashboard-btn");
+  if (refreshDashboardBtn) {
+    refreshDashboardBtn.addEventListener("click", function() {
+      if (window.loadStatistics) {
+        window.loadStatistics();
+      }
+    });
+  }
+  
+  // Thiết lập sự kiện cho nút chuyển đổi sidebar
+  const sidebarToggle = document.getElementById("sidebar-toggle");
+  const sidebar = document.getElementById("sidebar");
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener("click", function() {
+      sidebar.classList.toggle("show");
+    });
+  }
+  
+  // Thiết lập sự kiện cho nút chuyển đổi dark mode
+  const darkModeToggle = document.getElementById("dark-mode-toggle");
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener("click", function() {
+      document.body.classList.toggle("dark-mode");
+      const icon = darkModeToggle.querySelector("i");
+      if (icon) {
+        icon.classList.toggle("bi-moon-fill");
+        icon.classList.toggle("bi-sun-fill");
+      }
+    });
+  }
+});
 
 // Thiết lập các biểu đồ
 function setupCharts() {
   // Biểu đồ phân bố giảng viên theo Trường/Khoa
-  const departmentsChartCtx = document.getElementById("departmentsChart")
+  const departmentsChartCtx = document.getElementById("departmentsChart");
   if (departmentsChartCtx) {
     departmentsChart = new Chart(departmentsChartCtx, {
       type: "bar",
@@ -63,11 +82,11 @@ function setupCharts() {
           },
         },
       },
-    })
+    });
   }
 
   // Biểu đồ trình độ học vấn
-  const educationChartCtx = document.getElementById("educationChart")
+  const educationChartCtx = document.getElementById("educationChart");
   if (educationChartCtx) {
     educationChart = new Chart(educationChartCtx, {
       type: "doughnut",
@@ -103,22 +122,22 @@ function setupCharts() {
           },
           tooltip: {
             callbacks: {
-              label: (context) => {
-                const label = context.label || ""
-                const value = context.raw || 0
-                const total = context.dataset.data.reduce((a, b) => a + b, 0)
-                const percentage = total > 0 ? Math.round((value / total) * 100) : 0
-                return `${label}: ${value} (${percentage}%)`
+              label: function(context) {
+                const label = context.label || "";
+                const value = context.raw || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                return `${label}: ${value} (${percentage}%)`;
               },
             },
           },
         },
       },
-    })
+    });
   }
 
   // Biểu đồ báo cáo phân bố giảng viên theo Trường/Khoa
-  const departmentsReportChartCtx = document.getElementById("departmentsReportChart")
+  const departmentsReportChartCtx = document.getElementById("departmentsReportChart");
   if (departmentsReportChartCtx) {
     departmentsReportChart = new Chart(departmentsReportChartCtx, {
       type: "bar",
@@ -155,11 +174,11 @@ function setupCharts() {
           },
         },
       },
-    })
+    });
   }
 
   // Biểu đồ báo cáo trình độ học vấn
-  const educationReportChartCtx = document.getElementById("educationReportChart")
+  const educationReportChartCtx = document.getElementById("educationReportChart");
   if (educationReportChartCtx) {
     educationReportChart = new Chart(educationReportChartCtx, {
       type: "pie",
@@ -195,57 +214,57 @@ function setupCharts() {
           },
           tooltip: {
             callbacks: {
-              label: (context) => {
-                const label = context.label || ""
-                const value = context.raw || 0
-                const total = context.dataset.data.reduce((a, b) => a + b, 0)
-                const percentage = total > 0 ? Math.round((value / total) * 100) : 0
-                return `${label}: ${value} (${percentage}%)`
+              label: function(context) {
+                const label = context.label || "";
+                const value = context.raw || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                return `${label}: ${value} (${percentage}%)`;
               },
             },
           },
         },
       },
-    })
+    });
   }
 }
 
 // Cập nhật biểu đồ phân bố giảng viên theo Trường/Khoa
 function updateDepartmentsChart(departments, instructors) {
-  if (!departmentsChart) return
+  if (!departmentsChart) return;
 
   // Tạo bản đồ ID Trường/Khoa đến số lượng giảng viên
-  const departmentCounts = {}
-  instructors.forEach((instructor) => {
-    const departmentId = instructor.department_id
-    departmentCounts[departmentId] = (departmentCounts[departmentId] || 0) + 1
-  })
+  const departmentCounts = {};
+  instructors.forEach(function(instructor) {
+    const departmentId = instructor.department_id;
+    departmentCounts[departmentId] = (departmentCounts[departmentId] || 0) + 1;
+  });
 
   // Chuẩn bị dữ liệu cho biểu đồ
-  const labels = []
-  const data = []
+  const labels = [];
+  const data = [];
 
-  departments.forEach((department) => {
-    labels.push(department.name)
-    data.push(departmentCounts[department.id] || 0)
-  })
+  departments.forEach(function(department) {
+    labels.push(department.name);
+    data.push(departmentCounts[department.id] || 0);
+  });
 
   // Cập nhật biểu đồ
-  departmentsChart.data.labels = labels
-  departmentsChart.data.datasets[0].data = data
-  departmentsChart.update()
+  departmentsChart.data.labels = labels;
+  departmentsChart.data.datasets[0].data = data;
+  departmentsChart.update();
 
   // Cập nhật biểu đồ báo cáo nếu có
   if (departmentsReportChart) {
-    departmentsReportChart.data.labels = labels
-    departmentsReportChart.data.datasets[0].data = data
-    departmentsReportChart.update()
+    departmentsReportChart.data.labels = labels;
+    departmentsReportChart.data.datasets[0].data = data;
+    departmentsReportChart.update();
   }
 }
 
 // Cập nhật biểu đồ trình độ học vấn
 function updateEducationChart(instructors) {
-  if (!educationChart) return
+  if (!educationChart) return;
 
   // Đếm số lượng giảng viên theo trình độ học vấn
   const educationCounts = {
@@ -254,14 +273,14 @@ function updateEducationChart(instructors) {
     "Tiến sĩ": 0,
     "Phó Giáo sư": 0,
     "Giáo sư": 0,
-  }
+  };
 
-  instructors.forEach((instructor) => {
-    const education = instructor.education_level
+  instructors.forEach(function(instructor) {
+    const education = instructor.education_level;
     if (education && educationCounts.hasOwnProperty(education)) {
-      educationCounts[education]++
+      educationCounts[education]++;
     }
-  })
+  });
 
   // Cập nhật biểu đồ
   educationChart.data.datasets[0].data = [
@@ -270,8 +289,8 @@ function updateEducationChart(instructors) {
     educationCounts["Tiến sĩ"],
     educationCounts["Phó Giáo sư"],
     educationCounts["Giáo sư"],
-  ]
-  educationChart.update()
+  ];
+  educationChart.update();
 
   // Cập nhật biểu đồ báo cáo nếu có
   if (educationReportChart) {
@@ -281,28 +300,28 @@ function updateEducationChart(instructors) {
       educationCounts["Tiến sĩ"],
       educationCounts["Phó Giáo sư"],
       educationCounts["Giáo sư"],
-    ]
-    educationReportChart.update()
+    ];
+    educationReportChart.update();
   }
 
   // Cập nhật số lượng giảng viên có trình độ cao nhất
-  const highestEducation = educationCounts["Phó Giáo sư"] + educationCounts["Giáo sư"]
-  const highestEducationElement = document.getElementById("highest-education")
+  const highestEducation = educationCounts["Phó Giáo sư"] + educationCounts["Giáo sư"];
+  const highestEducationElement = document.getElementById("highest-education");
   if (highestEducationElement) {
-    highestEducationElement.textContent = highestEducation
+    highestEducationElement.textContent = highestEducation;
   }
 }
 
 // Cập nhật bảng thống kê
 function updateStatisticsTable(departments, instructors) {
-  const statisticsTable = document.getElementById("statistics-table")
-  if (!statisticsTable) return
+  const statisticsTable = document.getElementById("statistics-table");
+  if (!statisticsTable) return;
 
   // Tạo bản đồ thống kê
-  const statistics = {}
+  const statistics = {};
 
   // Khởi tạo thống kê cho mỗi Trường/Khoa
-  departments.forEach((department) => {
+  departments.forEach(function(department) {
     statistics[department.id] = {
       name: department.name,
       total: 0,
@@ -311,29 +330,29 @@ function updateStatisticsTable(departments, instructors) {
       "Tiến sĩ": 0,
       "Phó Giáo sư": 0,
       "Giáo sư": 0,
-    }
-  })
+    };
+  });
 
   // Đếm số lượng giảng viên theo Trường/Khoa và trình độ học vấn
-  instructors.forEach((instructor) => {
-    const departmentId = instructor.department_id
-    const education = instructor.education_level
+  instructors.forEach(function(instructor) {
+    const departmentId = instructor.department_id;
+    const education = instructor.education_level;
 
     if (statistics[departmentId]) {
-      statistics[departmentId].total++
+      statistics[departmentId].total++;
 
       if (education && statistics[departmentId].hasOwnProperty(education)) {
-        statistics[departmentId][education]++
+        statistics[departmentId][education]++;
       }
     }
-  })
+  });
 
   // Cập nhật bảng thống kê
-  statisticsTable.innerHTML = ""
+  statisticsTable.innerHTML = "";
 
   // Thêm hàng cho mỗi Trường/Khoa
-  Object.values(statistics).forEach((stat) => {
-    const tr = document.createElement("tr")
+  Object.values(statistics).forEach(function(stat) {
+    const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${stat.name}</td>
       <td>${stat.total}</td>
@@ -342,13 +361,13 @@ function updateStatisticsTable(departments, instructors) {
       <td>${stat["Tiến sĩ"]}</td>
       <td>${stat["Phó Giáo sư"]}</td>
       <td>${stat["Giáo sư"]}</td>
-    `
-    statisticsTable.appendChild(tr)
-  })
+    `;
+    statisticsTable.appendChild(tr);
+  });
 
   // Thêm hàng tổng cộng
-  const totalRow = document.createElement("tr")
-  totalRow.className = "table-primary fw-bold"
+  const totalRow = document.createElement("tr");
+  totalRow.className = "table-primary fw-bold";
 
   const totalStats = {
     total: 0,
@@ -357,17 +376,17 @@ function updateStatisticsTable(departments, instructors) {
     "Tiến sĩ": 0,
     "Phó Giáo sư": 0,
     "Giáo sư": 0,
-  }
+  };
 
   // Tính tổng số lượng giảng viên và từng trình độ học vấn
-  Object.values(statistics).forEach((stat) => {
-    totalStats.total += stat.total
-    totalStats["Cử nhân"] += stat["Cử nhân"]
-    totalStats["Thạc sĩ"] += stat["Thạc sĩ"]
-    totalStats["Tiến sĩ"] += stat["Tiến sĩ"]
-    totalStats["Phó Giáo sư"] += stat["Phó Giáo sư"]
-    totalStats["Giáo sư"] += stat["Giáo sư"]
-  })
+  Object.values(statistics).forEach(function(stat) {
+    totalStats.total += stat.total;
+    totalStats["Cử nhân"] += stat["Cử nhân"];
+    totalStats["Thạc sĩ"] += stat["Thạc sĩ"];
+    totalStats["Tiến sĩ"] += stat["Tiến sĩ"];
+    totalStats["Phó Giáo sư"] += stat["Phó Giáo sư"];
+    totalStats["Giáo sư"] += stat["Giáo sư"];
+  });
 
   // Thêm dữ liệu vào hàng tổng cộng
   totalRow.innerHTML = `
@@ -378,13 +397,13 @@ function updateStatisticsTable(departments, instructors) {
     <td>${totalStats["Tiến sĩ"]}</td>
     <td>${totalStats["Phó Giáo sư"]}</td>
     <td>${totalStats["Giáo sư"]}</td>
-  `
-  statisticsTable.appendChild(totalRow)
+  `;
+  statisticsTable.appendChild(totalRow);
 }
 
 // Xuất các hàm để sử dụng trong các file khác
 window.ChartUtils = {
-  updateDepartmentsChart,
-  updateEducationChart,
-  updateStatisticsTable,
-}
+  updateDepartmentsChart: updateDepartmentsChart,
+  updateEducationChart: updateEducationChart,
+  updateStatisticsTable: updateStatisticsTable
+};
