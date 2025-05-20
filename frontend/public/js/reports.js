@@ -84,7 +84,7 @@ function setupReportEventListeners() {
 // Xuất báo cáo
 function exportReport(format) {
   if (!window.departments || !window.instructors) {
-    window.showAlert("Không có dữ liệu để xuất báo cáo", "warning")
+    window.showAlert("Không có dữ liệu để xu��t báo cáo", "warning")
     return
   }
 

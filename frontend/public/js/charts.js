@@ -63,10 +63,12 @@ function setupCharts() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: 2, // Tỷ lệ chiều rộng:chiều cao = 2:1
         plugins: {
           legend: {
             position: "top",
+            display: false, // Ẩn legend để tiết kiệm không gian
           },
           tooltip: {
             mode: "index",
@@ -78,9 +80,31 @@ function setupCharts() {
             beginAtZero: true,
             ticks: {
               precision: 0,
+              font: {
+                size: 10, // Thu nhỏ font chữ
+              },
+            },
+            suggestedMax: 10, // Giới hạn trục y mặc định là 10
+          },
+          x: {
+            ticks: {
+              font: {
+                size: 10, // Thu nhỏ font chữ
+              },
+              maxRotation: 45, // Xoay nhãn để tiết kiệm không gian
+              minRotation: 45,
             },
           },
         },
+        layout: {
+          padding: {
+            left: 5,
+            right: 5,
+            top: 0,
+            bottom: 0,
+          },
+        },
+        barThickness: 15, // Thu nhỏ độ dày của cột
       },
     })
   } else {
@@ -167,10 +191,12 @@ function setupCharts() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        aspectRatio: 2.5, // Tỷ lệ chiều rộng:chiều cao = 2.5:1
         plugins: {
           legend: {
             position: "top",
+            display: false, // Ẩn legend để tiết kiệm không gian
           },
           tooltip: {
             mode: "index",
@@ -182,9 +208,31 @@ function setupCharts() {
             beginAtZero: true,
             ticks: {
               precision: 0,
+              font: {
+                size: 10, // Thu nhỏ font chữ
+              },
+            },
+            suggestedMax: 10, // Giới hạn trục y mặc định là 10
+          },
+          x: {
+            ticks: {
+              font: {
+                size: 10, // Thu nhỏ font chữ
+              },
+              maxRotation: 45, // Xoay nhãn để tiết kiệm không gian
+              minRotation: 45,
             },
           },
         },
+        layout: {
+          padding: {
+            left: 5,
+            right: 5,
+            top: 0,
+            bottom: 0,
+          },
+        },
+        barThickness: 15, // Thu nhỏ độ dày của cột
       },
     })
   } else {
@@ -274,24 +322,28 @@ function updateDepartmentsChart(departments, instructors) {
   console.log("Chart labels:", labels)
   console.log("Chart data:", data)
 
-  // Cập nhật biểu đồ dashboard
+  // Thêm đoạn code này vào cuối hàm, trước khi cập nhật biểu đồ
+  // Tìm giá trị lớn nhất trong dữ liệu
+  const maxValue = Math.max(...data, 1) // Đảm bảo ít nhất là 1
+  const suggestedMax = Math.ceil(maxValue * 1.2) // Thêm 20% không gian trên cùng
+
+  // Cập nhật giới hạn trục y cho cả hai biểu đồ
   if (departmentsChart) {
+    departmentsChart.options.scales.y.suggestedMax = suggestedMax
+    // Phần cập nhật dữ liệu giữ nguyên
     departmentsChart.data.labels = labels
     departmentsChart.data.datasets[0].data = data
     departmentsChart.update()
-    console.log("Dashboard chart updated")
-  } else {
-    console.log("Dashboard chart not initialized")
+    console.log("Dashboard chart updated with suggestedMax:", suggestedMax)
   }
 
-  // Cập nhật biểu đồ báo cáo
   if (departmentsReportChart) {
+    departmentsReportChart.options.scales.y.suggestedMax = suggestedMax
+    // Phần cập nhật dữ liệu giữ nguyên
     departmentsReportChart.data.labels = labels
     departmentsReportChart.data.datasets[0].data = data
     departmentsReportChart.update()
-    console.log("Report chart updated")
-  } else {
-    console.log("Report chart not initialized")
+    console.log("Report chart updated with suggestedMax:", suggestedMax)
   }
 }
 
