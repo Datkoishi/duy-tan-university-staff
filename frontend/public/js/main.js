@@ -5,6 +5,7 @@ let instructors = []
 let currentInstructorId = null
 let currentDepartmentId = null
 let previousSection = null // Khai báo biến previousSection
+const AutoFill = window.AutoFill // Declare AutoFill variable
 
 // DOM Elements
 const sections = {
@@ -124,6 +125,23 @@ function setupEventListeners() {
       deleteDepartment(currentDepartmentId)
     }
   })
+
+  // Thêm sự kiện cho nút "Điền ngẫu nhiên"
+  setupRandomFillButton()
+}
+
+// Thêm sự kiện cho nút "Điền ngẫu nhiên"
+function setupRandomFillButton() {
+  const fillRandomDataBtn = document.getElementById("fill-random-data-btn")
+  if (fillRandomDataBtn) {
+    fillRandomDataBtn.addEventListener("click", () => {
+      if (typeof AutoFill !== "undefined" && typeof AutoFill.fillForm === "function") {
+        AutoFill.fillForm()
+      } else {
+        console.error("AutoFill không được định nghĩa. Vui lòng kiểm tra file auto-fill.js")
+      }
+    })
+  }
 }
 
 // Hiển thị phần được chọn và ẩn các phần khác
