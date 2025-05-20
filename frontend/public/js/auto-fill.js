@@ -159,7 +159,7 @@ const AutoFill = {
     "Chuyên gia hàng đầu về {specialization}. Đã tham gia nhiều hội thảo quốc tế và là thành viên của {organization}. Có {experience} năm kinh nghiệm giảng dạy.",
   ],
 
-  // Danh sách trường đại học
+  // Danh s��ch trường đại học
   universities: [
     "Đại học Quốc gia Hà Nội",
     "Đại học Bách Khoa Hà Nội",

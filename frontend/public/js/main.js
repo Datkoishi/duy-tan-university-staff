@@ -220,7 +220,7 @@ function setupEventListeners() {
   }
 }
 
-// Hiển thị phần được chọn và ẩn các phần khác
+// Sửa hàm showSection để đảm bảo biểu đồ báo cáo được cập nhật đúng cách
 function showSection(sectionName) {
   // Lưu phần trước đó nếu không phải kết quả tìm kiếm
   if (currentSection !== "searchResults") {
@@ -264,14 +264,33 @@ function showSection(sectionName) {
   } else if (sectionName === "bulkAdd") {
     populateDepartmentDropdown("random-department")
   } else if (sectionName === "reports") {
-    // Cập nhật biểu đồ báo cáo
-    if (window.ChartUtils) {
-      window.ChartUtils.updateDepartmentsChart(departments, instructors)
-      window.ChartUtils.updateEducationChart(instructors)
-      window.ChartUtils.updateStatisticsTable(departments, instructors)
+    // Đảm bảo dữ liệu đã được tải
+    if (!departments.length || !instructors.length) {
+      Promise.all([loadDepartments(), loadInstructors()]).then(() => {
+        // Cập nhật biểu đồ báo cáo sau khi dữ liệu đã được tải
+        setTimeout(() => {
+          if (window.ChartUtils) {
+            window.ChartUtils.updateDepartmentsChart(departments, instructors)
+            window.ChartUtils.updateEducationChart(instructors)
+            window.ChartUtils.updateStatisticsTable(departments, instructors)
+          }
+        }, 100)
+      })
+    } else {
+      // Cập nhật biểu đồ báo cáo nếu dữ liệu đã có sẵn
+      setTimeout(() => {
+        if (window.ChartUtils) {
+          window.ChartUtils.updateDepartmentsChart(departments, instructors)
+          window.ChartUtils.updateEducationChart(instructors)
+          window.ChartUtils.updateStatisticsTable(departments, instructors)
+        }
+      }, 100)
     }
   }
 }
+
+// Xuất hàm showSection ra window để các file khác có thể truy cập
+window.showSection = showSection
 
 // Tải Trường/Khoa từ API
 async function loadDepartments() {
@@ -923,7 +942,7 @@ async function deleteDepartment(departmentId) {
   }
 }
 
-// Lưu Trường/Khoa (tạo ho��c cập nhật)
+// Lưu Trường/Khoa (tạo hoặc cập nhật)
 async function saveDepartment() {
   try {
     const departmentId = document.getElementById("department-id").value

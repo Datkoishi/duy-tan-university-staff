@@ -232,7 +232,7 @@ function setupCharts() {
 
 // Cập nhật biểu đồ phân bố giảng viên theo Trường/Khoa
 function updateDepartmentsChart(departments, instructors) {
-  if (!departmentsChart) return
+  if (!departmentsChart && !departmentsReportChart) return
 
   // Tạo bản đồ ID Trường/Khoa đến số lượng giảng viên
   const departmentCounts = {}
@@ -250,12 +250,14 @@ function updateDepartmentsChart(departments, instructors) {
     data.push(departmentCounts[department.id] || 0)
   })
 
-  // Cập nhật biểu đồ
-  departmentsChart.data.labels = labels
-  departmentsChart.data.datasets[0].data = data
-  departmentsChart.update()
+  // Cập nhật biểu đồ dashboard
+  if (departmentsChart) {
+    departmentsChart.data.labels = labels
+    departmentsChart.data.datasets[0].data = data
+    departmentsChart.update()
+  }
 
-  // Cập nhật biểu đồ báo cáo nếu có
+  // Cập nhật biểu đồ báo cáo
   if (departmentsReportChart) {
     departmentsReportChart.data.labels = labels
     departmentsReportChart.data.datasets[0].data = data
@@ -265,7 +267,7 @@ function updateDepartmentsChart(departments, instructors) {
 
 // Cập nhật biểu đồ trình độ học vấn
 function updateEducationChart(instructors) {
-  if (!educationChart) return
+  if (!educationChart && !educationReportChart) return
 
   // Đếm số lượng giảng viên theo trình độ học vấn
   const educationCounts = {
@@ -283,25 +285,23 @@ function updateEducationChart(instructors) {
     }
   })
 
-  // Cập nhật biểu đồ
-  educationChart.data.datasets[0].data = [
+  const educationData = [
     educationCounts["Cử nhân"],
     educationCounts["Thạc sĩ"],
     educationCounts["Tiến sĩ"],
     educationCounts["Phó Giáo sư"],
     educationCounts["Giáo sư"],
   ]
-  educationChart.update()
 
-  // Cập nhật biểu đồ báo cáo nếu có
+  // Cập nhật biểu đồ dashboard
+  if (educationChart) {
+    educationChart.data.datasets[0].data = educationData
+    educationChart.update()
+  }
+
+  // Cập nhật biểu đồ báo cáo
   if (educationReportChart) {
-    educationReportChart.data.datasets[0].data = [
-      educationCounts["Cử nhân"],
-      educationCounts["Thạc sĩ"],
-      educationCounts["Tiến sĩ"],
-      educationCounts["Phó Giáo sư"],
-      educationCounts["Giáo sư"],
-    ]
+    educationReportChart.data.datasets[0].data = educationData
     educationReportChart.update()
   }
 
