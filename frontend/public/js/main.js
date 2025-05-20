@@ -4,8 +4,7 @@ let departments = []
 let instructors = []
 let currentInstructorId = null
 let currentDepartmentId = null
-let previousSection = null // Khai báo biến previousSection
-const AutoFill = window.AutoFill // Declare AutoFill variable
+let previousSection = null
 
 // DOM Elements
 const sections = {
@@ -18,9 +17,6 @@ const sections = {
 
 // URL cơ sở API
 const API_BASE_URL = "/api"
-
-// Bootstrap Modal
-const bootstrap = window.bootstrap // Khai báo biến bootstrap
 
 // Khởi tạo ứng dụng
 document.addEventListener("DOMContentLoaded", () => {
@@ -126,17 +122,12 @@ function setupEventListeners() {
     }
   })
 
-  // Thêm sự kiện cho nút "Điền ngẫu nhiên"
-  setupRandomFillButton()
-}
-
-// Thêm sự kiện cho nút "Điền ngẫu nhiên"
-function setupRandomFillButton() {
+  // Nút điền ngẫu nhiên
   const fillRandomDataBtn = document.getElementById("fill-random-data-btn")
   if (fillRandomDataBtn) {
     fillRandomDataBtn.addEventListener("click", () => {
-      if (typeof AutoFill !== "undefined" && typeof AutoFill.fillForm === "function") {
-        AutoFill.fillForm()
+      if (typeof window.AutoFill !== "undefined" && typeof window.AutoFill.fillForm === "function") {
+        window.AutoFill.fillForm()
       } else {
         console.error("AutoFill không được định nghĩa. Vui lòng kiểm tra file auto-fill.js")
       }
@@ -642,7 +633,7 @@ async function saveInstructor() {
     showAlert(`Giảng viên đã được ${isUpdate ? "cập nhật" : "thêm"} thành công`, "success")
   } catch (error) {
     console.error("Lỗi khi lưu giảng viên:", error)
-    showAlert(`Lỗi khi ${instructorId ? "cập nhật" : "thêm"} Giảng viên`, "danger")
+    showAlert(`Lỗi khi ${document.getElementById("instructor-id").value ? "cập nhật" : "thêm"} Giảng viên`, "danger")
   }
 }
 
@@ -756,7 +747,7 @@ async function saveDepartment() {
     showAlert(`Trường/Khoa đã được ${isUpdate ? "cập nhật" : "thêm"} thành công`, "success")
   } catch (error) {
     console.error("Lỗi khi lưu Trường/Khoa:", error)
-    showAlert(`Lỗi khi ${departmentId ? "cập nhật" : "thêm"} Trường/Khoa`, "danger")
+    showAlert(`Lỗi khi ${document.getElementById("department-id").value ? "cập nhật" : "thêm"} Trường/Khoa`, "danger")
   }
 }
 
@@ -878,3 +869,6 @@ function showAlert(message, type) {
     bsAlert.close()
   }, 3000)
 }
+
+// Khởi tạo bootstrap
+const bootstrap = window.bootstrap
