@@ -25,6 +25,7 @@ const sections = {
 
 // Khởi tạo ứng dụng
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("Main.js loaded")
   // Thiết lập điều hướng
   setupNavigation()
 
@@ -295,6 +296,7 @@ function showSection(sectionName) {
       setTimeout(() => {
         console.log("Initializing charts from showSection")
         if (window.ChartUtils) {
+          console.log("ChartUtils available, updating charts")
           window.ChartUtils.setupCharts()
           window.ChartUtils.updateDepartmentsChart(departments, instructors)
           window.ChartUtils.updateEducationChart(instructors)
@@ -302,7 +304,7 @@ function showSection(sectionName) {
         } else {
           console.log("ChartUtils not available")
         }
-      }, 300)
+      }, 500)
     }
 
     loadData()

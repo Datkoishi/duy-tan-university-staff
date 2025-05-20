@@ -1,5 +1,6 @@
 // Khởi tạo khi trang được tải
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("Reports.js loaded")
   // Thiết lập sự kiện cho các nút xuất báo cáo
   setupReportEventListeners()
 
@@ -8,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (reportsLink) {
     reportsLink.addEventListener("click", (e) => {
       e.preventDefault()
+      console.log("Reports link clicked")
       // Đảm bảo phần báo cáo được hiển thị
       if (typeof window.showSection === "function") {
         window.showSection("reports")
@@ -26,6 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Cập nhật biểu đồ báo cáo sau một khoảng thời gian ngắn
       setTimeout(() => {
+        console.log("Checking for ChartUtils in reports.js")
+        console.log("ChartUtils:", window.ChartUtils)
+        console.log("departments:", window.departments)
+        console.log("instructors:", window.instructors)
+
         if (window.ChartUtils && window.departments && window.instructors) {
           console.log("Initializing charts from reports.js")
           window.ChartUtils.setupCharts()
@@ -39,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
             instructors: !!window.instructors,
           })
         }
-      }, 300)
+      }, 500)
     })
   }
 })

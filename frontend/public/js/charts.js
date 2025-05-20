@@ -1,4 +1,3 @@
-import { Chart } from "@/components/ui/chart"
 // Biến toàn cục cho biểu đồ
 let departmentsChart = null
 let educationChart = null
@@ -7,6 +6,7 @@ let educationReportChart = null
 
 // Khởi tạo biểu đồ
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("Charts.js loaded")
   // Thiết lập các biểu đồ khi trang được tải
   setupCharts()
 
@@ -47,7 +47,7 @@ function setupCharts() {
     if (departmentsChart) {
       departmentsChart.destroy()
     }
-    departmentsChart = new Chart(departmentsChartCtx, {
+    departmentsChart = new window.Chart(departmentsChartCtx, {
       type: "bar",
       data: {
         labels: [],
@@ -94,7 +94,7 @@ function setupCharts() {
     if (educationChart) {
       educationChart.destroy()
     }
-    educationChart = new Chart(educationChartCtx, {
+    educationChart = new window.Chart(educationChartCtx, {
       type: "doughnut",
       data: {
         labels: ["Cử nhân", "Thạc sĩ", "Tiến sĩ", "Phó Giáo sư", "Giáo sư"],
@@ -151,7 +151,7 @@ function setupCharts() {
     if (departmentsReportChart) {
       departmentsReportChart.destroy()
     }
-    departmentsReportChart = new Chart(departmentsReportChartCtx, {
+    departmentsReportChart = new window.Chart(departmentsReportChartCtx, {
       type: "bar",
       data: {
         labels: [],
@@ -198,7 +198,7 @@ function setupCharts() {
     if (educationReportChart) {
       educationReportChart.destroy()
     }
-    educationReportChart = new Chart(educationReportChartCtx, {
+    educationReportChart = new window.Chart(educationReportChartCtx, {
       type: "pie",
       data: {
         labels: ["Cử nhân", "Thạc sĩ", "Tiến sĩ", "Phó Giáo sư", "Giáo sư"],
