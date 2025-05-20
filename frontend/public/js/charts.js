@@ -1,4 +1,16 @@
+import { ChartStyle } from "@/components/ui/chart"
+import { ChartLegendContent } from "@/components/ui/chart"
+import { ChartLegend } from "@/components/ui/chart"
+import { ChartTooltipContent } from "@/components/ui/chart"
+import { ChartTooltip } from "@/components/ui/chart"
+import { ChartContainer } from "@/components/ui/chart"
 import { Chart } from "@/components/ui/chart"
+// Xóa dòng import đầu tiên
+// import {
+Chart, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, ChartStyle
+\
+} from "@/components/ui/chart"
+
 // Biến toàn cục cho biểu đồ
 let departmentsChart = null
 let educationChart = null
@@ -275,7 +287,10 @@ function updateEducationChart(instructors) {
 
   // Cập nhật số lượng giảng viên có trình độ cao nhất
   const highestEducation = educationCounts["Phó Giáo sư"] + educationCounts["Giáo sư"]
-  document.getElementById("highest-education").textContent = highestEducation
+  const highestEducationElement = document.getElementById("highest-education")
+  if (highestEducationElement) {
+    highestEducationElement.textContent = highestEducation
+  }
 }
 
 // Cập nhật bảng thống kê
@@ -365,4 +380,11 @@ function updateStatisticsTable(departments, instructors) {
     <td>${totalStats["Giáo sư"]}</td>
   `
   statisticsTable.appendChild(totalRow)
+}
+
+// Xuất các hàm để sử dụng trong các file khác
+window.ChartUtils = {
+  updateDepartmentsChart,
+  updateEducationChart,
+  updateStatisticsTable,
 }

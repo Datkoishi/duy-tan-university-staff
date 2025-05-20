@@ -273,6 +273,9 @@ async function loadDepartments() {
 
     // Cập nhật dropdown bộ lọc Trường/Khoa
     populateDepartmentDropdown("department-filter")
+
+    // Cập nhật danh sách Trường/Khoa trên dashboard
+    updateDepartmentsListDashboard()
   } catch (error) {
     console.error("Lỗi khi tải Trường/Khoa:", error)
     showAlert("Lỗi khi tải dữ liệu Trường/Khoa", "danger")
@@ -438,9 +441,11 @@ function updateDepartmentCounts() {
 function loadStatistics() {
   // Tổng số giảng viên
   document.getElementById("total-instructors").textContent = instructors.length
+  document.getElementById("total-instructors-dashboard").textContent = instructors.length
 
   // Tổng số Trường/Khoa
   document.getElementById("total-departments").textContent = departments.length
+  document.getElementById("total-departments-dashboard").textContent = departments.length
 
   // Thêm mới gần đây (trong 30 ngày qua)
   const thirtyDaysAgo = new Date()
@@ -452,6 +457,65 @@ function loadStatistics() {
   }).length
 
   document.getElementById("recent-additions").textContent = recentAdditions
+  document.getElementById("recent-additions-dashboard").textContent = recentAdditions
+
+  // Cập nhật biểu đồ nếu ChartUtils tồn tại
+  if (window.ChartUtils) {
+    window.ChartUtils.updateDepartmentsChart(departments, instructors)
+    window.ChartUtils.updateEducationChart(instructors)
+    window.ChartUtils.updateStatisticsTable(departments, instructors)
+  }
+
+  // Cập nhật bảng giảng viên gần đây trên dashboard
+  updateRecentInstructorsTable()
+}
+
+// Thêm hàm mới để cập nhật bảng giảng viên gần đây trên dashboard
+function updateRecentInstructorsTable() {
+  const recentInstructorsTable = document.getElementById("recent-instructors-table")
+  if (!recentInstructorsTable) return
+
+  // Sắp xếp giảng viên theo ngày thêm mới nhất
+  const recentInstructors = [...instructors]
+    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    .slice(0, 5)
+
+  if (recentInstructors.length === 0) {
+    recentInstructorsTable.innerHTML = `
+      <tr>
+        <td colspan="5" class="text-center">Không có dữ liệu</td>
+      </tr>
+    `
+    return
+  }
+
+  recentInstructorsTable.innerHTML = ""
+
+  recentInstructors.forEach((instructor) => {
+    const tr = document.createElement("tr")
+    const createdDate = instructor.created_at ? new Date(instructor.created_at).toLocaleDateString("vi-VN") : "N/A"
+
+    tr.innerHTML = `
+      <td>${instructor.full_name}</td>
+      <td>${instructor.email || "N/A"}</td>
+      <td>${instructor.department_name || "N/A"}</td>
+      <td>${createdDate}</td>
+      <td>
+        <button class="btn btn-sm btn-info view-instructor-btn" data-instructor-id="${instructor.id}">
+          <i class="bi bi-eye"></i>
+        </button>
+      </td>
+    `
+    recentInstructorsTable.appendChild(tr)
+  })
+
+  // Thêm sự kiện cho các nút xem
+  document.querySelectorAll("#recent-instructors-table .view-instructor-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const instructorId = btn.getAttribute("data-instructor-id")
+      viewInstructor(instructorId)
+    })
+  })
 }
 
 // Điền dropdown Trường/Khoa
@@ -872,3 +936,34 @@ function showAlert(message, type) {
 
 // Khởi tạo bootstrap
 const bootstrap = window.bootstrap
+
+// Thêm hàm mới để cập nhật danh sách Trường/Khoa trên dashboard
+function updateDepartmentsListDashboard() {
+  const departmentsListDashboard = document.getElementById("departments-list-dashboard")
+  if (!departmentsListDashboard) return
+
+  departmentsListDashboard.innerHTML = ""
+
+  if (departments.length === 0) {
+    departmentsListDashboard.innerHTML = '<li class="list-group-item">Không có dữ liệu</li>'
+    return
+  }
+
+  departments.forEach((department) => {
+    const li = document.createElement("li")
+    li.className = "list-group-item d-flex justify-content-between align-items-center"
+
+    // Đếm số lượng giảng viên trong khoa
+    const instructorCount = instructors.filter((i) => i.department_id === department.id).length
+
+    li.innerHTML = `
+      <div>
+        <strong>${department.name}</strong>
+        <div class="text-muted small">${department.description || "Không có mô tả"}</div>
+      </div>
+      <span class="badge bg-primary rounded-pill">${instructorCount}</span>
+    `
+
+    departmentsListDashboard.appendChild(li)
+  })
+}
