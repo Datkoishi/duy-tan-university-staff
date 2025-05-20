@@ -20,34 +20,33 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // Thiết lập sự kiện cho nút chuyển đổi sidebar
-  const sidebarToggle = document.getElementById("sidebar-toggle")
-  const sidebar = document.getElementById("sidebar")
-  if (sidebarToggle && sidebar) {
-    sidebarToggle.addEventListener("click", () => {
-      sidebar.classList.toggle("show")
-    })
-  }
-
-  // Thiết lập sự kiện cho nút chuyển đổi dark mode
-  const darkModeToggle = document.getElementById("dark-mode-toggle")
-  if (darkModeToggle) {
-    darkModeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode")
-      const icon = darkModeToggle.querySelector("i")
-      if (icon) {
-        icon.classList.toggle("bi-moon-fill")
-        icon.classList.toggle("bi-sun-fill")
-      }
+  // Thiết lập sự kiện cho liên kết báo cáo
+  const reportsLink = document.getElementById("reports-link")
+  if (reportsLink) {
+    reportsLink.addEventListener("click", () => {
+      setTimeout(() => {
+        setupCharts()
+        if (window.departments && window.instructors) {
+          updateDepartmentsChart(window.departments, window.instructors)
+          updateEducationChart(window.instructors)
+          updateStatisticsTable(window.departments, window.instructors)
+        }
+      }, 300)
     })
   }
 })
 
 // Thiết lập các biểu đồ
 function setupCharts() {
+  console.log("Setting up charts...")
+
   // Biểu đồ phân bố giảng viên theo Trường/Khoa
   const departmentsChartCtx = document.getElementById("departmentsChart")
   if (departmentsChartCtx) {
+    console.log("Found departmentsChart element")
+    if (departmentsChart) {
+      departmentsChart.destroy()
+    }
     departmentsChart = new Chart(departmentsChartCtx, {
       type: "bar",
       data: {
@@ -84,11 +83,17 @@ function setupCharts() {
         },
       },
     })
+  } else {
+    console.log("departmentsChart element not found")
   }
 
   // Biểu đồ trình độ học vấn
   const educationChartCtx = document.getElementById("educationChart")
   if (educationChartCtx) {
+    console.log("Found educationChart element")
+    if (educationChart) {
+      educationChart.destroy()
+    }
     educationChart = new Chart(educationChartCtx, {
       type: "doughnut",
       data: {
@@ -135,11 +140,17 @@ function setupCharts() {
         },
       },
     })
+  } else {
+    console.log("educationChart element not found")
   }
 
   // Biểu đồ báo cáo phân bố giảng viên theo Trường/Khoa
   const departmentsReportChartCtx = document.getElementById("departmentsReportChart")
   if (departmentsReportChartCtx) {
+    console.log("Found departmentsReportChart element")
+    if (departmentsReportChart) {
+      departmentsReportChart.destroy()
+    }
     departmentsReportChart = new Chart(departmentsReportChartCtx, {
       type: "bar",
       data: {
@@ -176,11 +187,17 @@ function setupCharts() {
         },
       },
     })
+  } else {
+    console.log("departmentsReportChart element not found")
   }
 
   // Biểu đồ báo cáo trình độ học vấn
   const educationReportChartCtx = document.getElementById("educationReportChart")
   if (educationReportChartCtx) {
+    console.log("Found educationReportChart element")
+    if (educationReportChart) {
+      educationReportChart.destroy()
+    }
     educationReportChart = new Chart(educationReportChartCtx, {
       type: "pie",
       data: {
@@ -227,12 +244,16 @@ function setupCharts() {
         },
       },
     })
+  } else {
+    console.log("educationReportChart element not found")
   }
 }
 
 // Cập nhật biểu đồ phân bố giảng viên theo Trường/Khoa
 function updateDepartmentsChart(departments, instructors) {
-  if (!departmentsChart && !departmentsReportChart) return
+  console.log("Updating departments chart...")
+  console.log("Departments:", departments)
+  console.log("Instructors:", instructors)
 
   // Tạo bản đồ ID Trường/Khoa đến số lượng giảng viên
   const departmentCounts = {}
@@ -250,11 +271,17 @@ function updateDepartmentsChart(departments, instructors) {
     data.push(departmentCounts[department.id] || 0)
   })
 
+  console.log("Chart labels:", labels)
+  console.log("Chart data:", data)
+
   // Cập nhật biểu đồ dashboard
   if (departmentsChart) {
     departmentsChart.data.labels = labels
     departmentsChart.data.datasets[0].data = data
     departmentsChart.update()
+    console.log("Dashboard chart updated")
+  } else {
+    console.log("Dashboard chart not initialized")
   }
 
   // Cập nhật biểu đồ báo cáo
@@ -262,12 +289,15 @@ function updateDepartmentsChart(departments, instructors) {
     departmentsReportChart.data.labels = labels
     departmentsReportChart.data.datasets[0].data = data
     departmentsReportChart.update()
+    console.log("Report chart updated")
+  } else {
+    console.log("Report chart not initialized")
   }
 }
 
 // Cập nhật biểu đồ trình độ học vấn
 function updateEducationChart(instructors) {
-  if (!educationChart && !educationReportChart) return
+  console.log("Updating education chart...")
 
   // Đếm số lượng giảng viên theo trình độ học vấn
   const educationCounts = {
@@ -293,16 +323,24 @@ function updateEducationChart(instructors) {
     educationCounts["Giáo sư"],
   ]
 
+  console.log("Education data:", educationData)
+
   // Cập nhật biểu đồ dashboard
   if (educationChart) {
     educationChart.data.datasets[0].data = educationData
     educationChart.update()
+    console.log("Dashboard education chart updated")
+  } else {
+    console.log("Dashboard education chart not initialized")
   }
 
   // Cập nhật biểu đồ báo cáo
   if (educationReportChart) {
     educationReportChart.data.datasets[0].data = educationData
     educationReportChart.update()
+    console.log("Report education chart updated")
+  } else {
+    console.log("Report education chart not initialized")
   }
 
   // Cập nhật số lượng giảng viên có trình độ cao nhất
@@ -315,8 +353,12 @@ function updateEducationChart(instructors) {
 
 // Cập nhật bảng thống kê
 function updateStatisticsTable(departments, instructors) {
+  console.log("Updating statistics table...")
   const statisticsTable = document.getElementById("statistics-table")
-  if (!statisticsTable) return
+  if (!statisticsTable) {
+    console.log("Statistics table element not found")
+    return
+  }
 
   // Tạo bản đồ thống kê
   const statistics = {}
@@ -400,10 +442,12 @@ function updateStatisticsTable(departments, instructors) {
     <td>${totalStats["Giáo sư"]}</td>
   `
   statisticsTable.appendChild(totalRow)
+  console.log("Statistics table updated")
 }
 
 // Xuất các hàm để sử dụng trong các file khác
 window.ChartUtils = {
+  setupCharts: setupCharts,
   updateDepartmentsChart: updateDepartmentsChart,
   updateEducationChart: updateEducationChart,
   updateStatisticsTable: updateStatisticsTable,

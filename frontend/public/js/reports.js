@@ -2,6 +2,46 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Thiết lập sự kiện cho các nút xuất báo cáo
   setupReportEventListeners()
+
+  // Thiết lập sự kiện cho liên kết báo cáo
+  const reportsLink = document.getElementById("reports-link")
+  if (reportsLink) {
+    reportsLink.addEventListener("click", (e) => {
+      e.preventDefault()
+      // Đảm bảo phần báo cáo được hiển thị
+      if (typeof window.showSection === "function") {
+        window.showSection("reports")
+      } else if (window.showSection) {
+        window.showSection("reports")
+      } else {
+        // Fallback nếu hàm showSection không tồn tại
+        document.querySelectorAll("section").forEach((section) => {
+          section.style.display = "none"
+        })
+        const reportsSection = document.getElementById("reports-section")
+        if (reportsSection) {
+          reportsSection.style.display = "block"
+        }
+      }
+
+      // Cập nhật biểu đồ báo cáo sau một khoảng thời gian ngắn
+      setTimeout(() => {
+        if (window.ChartUtils && window.departments && window.instructors) {
+          console.log("Initializing charts from reports.js")
+          window.ChartUtils.setupCharts()
+          window.ChartUtils.updateDepartmentsChart(window.departments, window.instructors)
+          window.ChartUtils.updateEducationChart(window.instructors)
+          window.ChartUtils.updateStatisticsTable(window.departments, window.instructors)
+        } else {
+          console.log("Missing dependencies for charts:", {
+            ChartUtils: !!window.ChartUtils,
+            departments: !!window.departments,
+            instructors: !!window.instructors,
+          })
+        }
+      }, 300)
+    })
+  }
 })
 
 // Thiết lập sự kiện cho các nút xuất báo cáo
@@ -9,7 +49,8 @@ function setupReportEventListeners() {
   // Nút xuất báo cáo Excel
   const exportReportExcelBtn = document.getElementById("export-report-excel")
   if (exportReportExcelBtn) {
-    exportReportExcelBtn.addEventListener("click", () => {
+    exportReportExcelBtn.addEventListener("click", (e) => {
+      e.preventDefault()
       exportReport("excel")
     })
   }
@@ -17,7 +58,8 @@ function setupReportEventListeners() {
   // Nút xuất báo cáo PDF
   const exportReportPdfBtn = document.getElementById("export-report-pdf")
   if (exportReportPdfBtn) {
-    exportReportPdfBtn.addEventListener("click", () => {
+    exportReportPdfBtn.addEventListener("click", (e) => {
+      e.preventDefault()
       exportReport("pdf")
     })
   }
@@ -25,7 +67,8 @@ function setupReportEventListeners() {
   // Nút xuất báo cáo CSV
   const exportReportCsvBtn = document.getElementById("export-report-csv")
   if (exportReportCsvBtn) {
-    exportReportCsvBtn.addEventListener("click", () => {
+    exportReportCsvBtn.addEventListener("click", (e) => {
+      e.preventDefault()
       exportReport("csv")
     })
   }

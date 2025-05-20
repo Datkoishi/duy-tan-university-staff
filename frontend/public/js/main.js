@@ -222,6 +222,8 @@ function setupEventListeners() {
 
 // Sửa hàm showSection để đảm bảo biểu đồ báo cáo được cập nhật đúng cách
 function showSection(sectionName) {
+  console.log("Showing section:", sectionName)
+
   // Lưu phần trước đó nếu không phải kết quả tìm kiếm
   if (currentSection !== "searchResults") {
     previousSection = currentSection
@@ -264,28 +266,46 @@ function showSection(sectionName) {
   } else if (sectionName === "bulkAdd") {
     populateDepartmentDropdown("random-department")
   } else if (sectionName === "reports") {
+    console.log("Loading reports section")
+
     // Đảm bảo dữ liệu đã được tải
-    if (!departments.length || !instructors.length) {
-      Promise.all([loadDepartments(), loadInstructors()]).then(() => {
-        // Cập nhật biểu đồ báo cáo sau khi dữ liệu đã được tải
-        setTimeout(() => {
-          if (window.ChartUtils) {
-            window.ChartUtils.updateDepartmentsChart(departments, instructors)
-            window.ChartUtils.updateEducationChart(instructors)
-            window.ChartUtils.updateStatisticsTable(departments, instructors)
-          }
-        }, 100)
-      })
-    } else {
-      // Cập nhật biểu đồ báo cáo nếu dữ liệu đã có sẵn
+    const loadData = async () => {
+      if (!departments.length || !instructors.length) {
+        console.log("Loading data for reports")
+        try {
+          // Tải dữ liệu nếu chưa có
+          const deptPromise = fetch(`${API_BASE_URL}/departments`).then((res) => res.json())
+          const instrPromise = fetch(`${API_BASE_URL}/instructors`).then((res) => res.json())
+
+          const [deptData, instrData] = await Promise.all([deptPromise, instrPromise])
+
+          departments = deptData
+          instructors = instrData
+
+          window.departments = departments
+          window.instructors = instructors
+
+          console.log("Data loaded for reports:", { departments, instructors })
+        } catch (error) {
+          console.error("Error loading data for reports:", error)
+        }
+      }
+
+      // Cập nhật biểu đồ báo cáo sau khi dữ liệu đã được tải
       setTimeout(() => {
+        console.log("Initializing charts from showSection")
         if (window.ChartUtils) {
+          window.ChartUtils.setupCharts()
           window.ChartUtils.updateDepartmentsChart(departments, instructors)
           window.ChartUtils.updateEducationChart(instructors)
           window.ChartUtils.updateStatisticsTable(departments, instructors)
+        } else {
+          console.log("ChartUtils not available")
         }
-      }, 100)
+      }, 300)
     }
+
+    loadData()
   }
 }
 
